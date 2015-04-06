@@ -1,0 +1,27 @@
+{
+  "name": "ionic-perf",
+  "version": "0.0.1",
+  "description": "Performance analysis of Ionic over the versions",
+  "main": "lib/index.js",
+  "bin": {
+    "ionic-perf": "lib/cli.js"
+  },
+  "keywords": [
+    "ionic",
+    "performance",
+    "telemetry"
+  ],
+  "author": "Parashuram <code@nparashuram.com>",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.6.0",
+    "glob": "^4.4.1",
+    "lodash": "^3.3.1",
+    "node-static": "^0.7.6",
+    "perfjankie": "^1.2.2",
+    "rimraf": "^2.2.8",
+    "semver": "^4.3.1"
+  },
+  "devDependencies": {},
+  "repository": {}
+}
