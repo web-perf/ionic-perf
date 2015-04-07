@@ -19,7 +19,7 @@ var CONFIG = {
 		database: pkg.name
 	},
 	selenium: 'http://localhost:9515',
-	repeat: 10,
+	repeat: 1,
 	browser: ['chrome']
 };
 
@@ -80,6 +80,9 @@ function runPerfTests(components, versions, cb) {
 					}
 					runQueue(i + 1);
 				},
+				actions: [require('perfjankie/node_modules/browser-perf').actions.scroll({
+					scrollElement: "document.getElementsByTagName('ion-content')[0]"
+				})],
 				repeat: CONFIG.repeat,
 				selenium: CONFIG.selenium,
 				couch: CONFIG.couch,
@@ -103,10 +106,8 @@ function defaultArgs(opts) {
 }
 
 function main(opts) {
-
 	defaultArgs(opts);
 	generateFiles(opts.components, opts.versions);
-	return;
 
 	// Start Web Server
 	var server = require('http').createServer(function(request, response) {
@@ -122,7 +123,8 @@ function main(opts) {
 			onlyUpdateSite: true
 		}, CONFIG.couch),
 		callback: function() {
-			runPerfTests(components, versions, function() {
+			console.log('Metadata updated, now starting tests');
+			runPerfTests(opts.components, opts.versions, function() {
 				console.log('All done, view results at %s/%s/_design/site/index.html', CONFIG.couch.server, CONFIG.couch.database);
 				server.close();
 			});
