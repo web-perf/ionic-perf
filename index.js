@@ -20,7 +20,7 @@ var CONFIG = {
 	},
 	selenium: 'http://localhost:9515',
 	repeat: 1,
-	browser: ['chrome']
+	browsers: ['chrome']
 };
 
 var frameworkLibs = require('./test/versions.json');
@@ -79,6 +79,9 @@ function runPerfTests(components, versions, cb) {
 						console.error(err);
 					}
 					runQueue(i + 1);
+				},
+				preScript: function(browser) {
+					return browser.setWindowSize(640, 1136);
 				},
 				actions: [require('perfjankie/node_modules/browser-perf').actions.scroll({
 					scrollElement: "document.getElementsByTagName('ion-content')[0]"
