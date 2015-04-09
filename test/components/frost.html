@@ -1,0 +1,61 @@
+<script src="http://driftyco.github.io/ionic-code/contrib/ionic-contrib-frost/1.0.0/ionic.contrib.frost.js"></script>
+<style>
+.dark-overlay {
+  background-color: #222 !important;
+  opacity: 0.8;
+}
+.dark-item {
+  background-color: transparent !important;
+  color: #fff !important;
+  border-color: #444 !important;
+}
+.close-icon:before {
+  font-size: 40px !important;
+}
+.bar-clear {
+  background: none;
+}
+.overlay-spacer {
+  height: 100px;
+}
+.content-flush {
+  top: 0px !important;
+}
+</style>
+<ion-pane frost ng-controller="UnderCtrl">
+	<ion-header-bar class="bar-dark">
+		<h1 class="title">Under content</h1>
+	</ion-header-bar>
+	<ion-content class="has-header">
+		<button class="button button-block button-balanced">A Bright Button</button>
+		<ion-list>
+			<ion-item ng-repeat="item in items">{{item.text}}</ion-item>
+		</ion-list>
+	</ion-content>
+</ion-pane>
+<ion-pane ng-controller="OverlayCtrl" class="dark-overlay">
+	<ion-header-bar class="bar-clear">
+		<button class="button button-icon ion-ios7-close-empty close-icon pull-right"></button>
+	</ion-header-bar>
+	<ion-content class="content-flush has-header">
+		<div class="overlay-spacer"></div>
+		<ion-list>
+			<ion-item ng-repeat="item in items" class="dark-item">{{item.text}}</ion-item>
+		</ion-list>
+	</ion-content>
+</ion-pane>
+<script>
+      angular.module('ionicApp', ['ionic', 'ionic.contrib.frost'])
+      .controller('UnderCtrl', function($scope) {
+        $scope.items = [];
+        for(var i = 0; i < 30; i++) {
+          $scope.items.push({text: 'Item ' + (i+1) });
+        }
+      })
+      .controller('OverlayCtrl', function($scope) {
+        $scope.items = [];
+        for(var i = 0; i < 100; i++) {
+          $scope.items.push({text: 'Option' + (i+1) });
+        }
+      });
+    </script>

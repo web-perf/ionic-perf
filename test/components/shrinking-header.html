@@ -1,0 +1,137 @@
+<style>
+  .fake-statusbar {
+    height: 20px;
+    max-height: 20px;
+    font-size: 12px;
+    box-sizing: border-box;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    color: #fff;
+    padding: 2px 3px 3px 3px;
+  }
+  .fake-statusbar .time {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+  }
+  .fake-statusbar .pull-left {
+    float: left;
+  }
+  .fake-statusbar .pull-right {
+    float: right;
+  }
+  .bar-header {
+    height: 64px !important;
+  }
+  .bar-header > * {
+    margin-top: 20px !important;
+  }
+  .scroll-content {
+    top: 0 !important
+  }
+</style>
+<fake-statusbar></fake-statusbar>
+<ion-pane>
+  <ion-header-bar class="bar-positive">
+    <div class="buttons">
+      <button class="button button-icon ion-navicon"></button>
+    </div>
+    <h1 class="title">Things</h1>
+  </ion-header-bar>
+
+  <ion-content header-shrink scroll-event-interval="5" ng-controller="MyCtrl">
+    <div style="height: 64px;"></div>
+    <div class="list card" ng-repeat = "i in count track by $index">
+
+      <div class="item item-avatar">
+        <img src="http://ionicframework.com/img/docs/mcfly.jpg">
+        <h2>Marty McFly</h2>
+        <p>November 05, 1955</p>
+      </div>
+
+      <div class="item item-body">
+        <p>
+          This is a "Facebook" styled Card. The header is created from a Thumbnail List item,
+              the content is from a card-body consisting of an image and paragraph text. The footer
+              consists of tabs, icons aligned left, within the card-footer.
+        </p>
+        <p>
+          <a href="#" class="subdued">1 Like</a>
+          <a href="#" class="subdued">5 Comments</a>
+        </p>
+      </div>
+
+      <div class="item tabs tabs-secondary tabs-icon-left">
+        <a class="tab-item" href="#"> <i class="icon ion-thumbsup"></i>
+          Like
+        </a>
+        <a class="tab-item" href="#"> <i class="icon ion-chatbox"></i>
+          Comment
+        </a>
+        <a class="tab-item" href="#">
+          <i class="icon ion-share"></i>
+          Share
+        </a>
+      </div>
+
+    </div>
+  </ion-content>
+</ion-pane>
+<script type="text/javascript">
+  angular
+    .module('ionicApp', ['ionic'])
+    .controller('MyCtrl', function($scope) {
+      $scope.count = new Array(50);
+    })
+    .directive('fakeStatusbar', function() {
+      return {
+        restrict: 'E',
+        replace: true,
+        template: '<div class="fake-statusbar"><div class="pull-left">Carrier</div><div class="time">3:30 PM</div><div class="pull-right">50%</div></div>'
+      }
+    })
+    .directive('headerShrink', function($document) {
+      var fadeAmt;
+      var shrink = function(header, content, amt, max) {
+        amt = Math.min(44, amt);
+        fadeAmt = 1 - amt / 44;
+        ionic.requestAnimationFrame(function() {
+          header.style[ionic.CSS.TRANSFORM] = 'translate3d(0, -' + amt + 'px, 0)';
+          for (var i = 0, j = header.children.length; i < j; i++) {
+            header.children[i].style.opacity = fadeAmt;
+          }
+        });
+      };
+
+      return {
+        restrict: 'A',
+        link: function($scope, $element, $attr) {
+          var starty = $scope.$eval($attr.headerShrink) || 0;
+          var shrinkAmt;
+
+          var header = $document[0].body.querySelector('.bar-header');
+          var headerHeight = header.offsetHeight;
+
+          $element.bind('scroll', function(e) {
+            var scrollTop = null;
+            if (e.detail) {
+              scrollTop = e.detail.scrollTop;
+            } else if (e.target) {
+              scrollTop = e.target.scrollTop;
+            }
+            if (scrollTop > starty) {
+              // Start shrinking
+              shrinkAmt = headerHeight - Math.max(0, (starty + headerHeight) - scrollTop);
+              shrink(header, $element[0], shrinkAmt, headerHeight);
+            } else {
+              shrink(header, $element[0], 0, headerHeight);
+            }
+          });
+        }
+      }
+    })
+</script>
