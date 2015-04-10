@@ -23,20 +23,28 @@ var CONFIG = {
 	browsers: ['chrome']
 };
 
-var frameworkLibs = require('./test/versions.json');
-
-
-function generateFiles(components, versions) {
-	var template = _.template(fs.readFileSync(path.join(__dirname, 'test/template.html')));
+function generateFiles(components, versions, frameworkLibs) {
+	console.log('Starting to generate files');
 
 	rimraf.sync('./bin');
 	fs.mkdirSync(path.join(__dirname, 'bin'))
 
-	_.forEach(versions, function(version) {
-		var dir = path.join(__dirname, 'bin', 'v' + version);
-		fs.mkdirSync(dir);
-		_.forEach(components, function(component) {
+	var queue = [];
+	var versionDir = {};
+	var template = _.template(fs.readFileSync(path.join(__dirname, 'test/template.html')));
+
+	_.forEach(components, function(component) {
+		_.forEach(versions, function(version) {
+
+			var dir = path.join(__dirname, 'bin', 'v' + version);
+			// Create a dir if it does not exist for version
+			if (!versionDir[dir]) {
+				fs.mkdirSync(dir);
+				versionDir[dir] = true;
+			}
+
 			var file = path.join(dir, component + '.html');
+
 			fs.writeFileSync(file, template({
 				repeat: 200,
 				version: version,
@@ -45,24 +53,25 @@ function generateFiles(components, versions) {
 				css: frameworkLibs[version].css,
 				javascript: frameworkLibs[version].js
 			}));
-		});
-	});
-}
-
-
-function runPerfTests(components, versions, cb) {
-	var queue = [];
-
-	_.forEach(components, function(component) {
-		_.forEach(versions, function(version) {
 			queue.push({
 				component: component,
 				version: version,
 				seq: frameworkLibs[version].seq,
-				url: ['http://localhost:8080/v', version, '/', component, '.html'].join('')
+				url: ['/v', version, '/', component, '.html'].join('')
 			});
 		});
 	});
+
+	fs.writeFileSync(path.join(__dirname, 'bin/index.html'), _.template(fs.readFileSync(path.join(__dirname, 'test/index.html')))({
+		components: components,
+		versions: versions
+	}));
+	console.log('All files generated');
+	return queue;
+}
+
+
+function runPerfTests(queue, cb) {
 
 	(function runQueue(i) {
 		if (i < queue.length) {
@@ -70,7 +79,7 @@ function runPerfTests(components, versions, cb) {
 			console.log('Running [%d/%d] %s@%s ', i, queue.length, job.component, job.version);
 			perfjankie({
 				suite: pkg.name,
-				url: job.url,
+				url: 'http://localhost:8080' + job.url,
 				name: job.component,
 				run: job.version,
 				time: job.seq,
@@ -103,14 +112,16 @@ function defaultArgs(opts) {
 			return path.basename(component, '.html');
 		});
 	}
-	opts.versions = _.filter(_.keys(frameworkLibs), function(version) {
+	opts.versions = _.filter(_.keys(opts.frameworkLibs), function(version) {
 		return semver.satisfies(version, opts.versions || '*');
 	});
 }
 
 function main(opts) {
+	opts.frameworkLibs = require('./test/versions.json');
+
 	defaultArgs(opts);
-	generateFiles(opts.components, opts.versions);
+	var files = generateFiles(opts.components, opts.versions, opts.frameworkLibs);
 
 	// Start Web Server
 	var server = require('http').createServer(function(request, response) {
@@ -127,7 +138,7 @@ function main(opts) {
 		}, CONFIG.couch),
 		callback: function() {
 			console.log('Metadata updated, now starting tests');
-			runPerfTests(opts.components, opts.versions, function() {
+			runPerfTests(files, function() {
 				console.log('All done, view results at %s/%s/_design/site/index.html', CONFIG.couch.server, CONFIG.couch.database);
 				server.close();
 			});
