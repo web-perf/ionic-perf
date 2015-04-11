@@ -22,6 +22,13 @@ var CONFIG = {
 	selenium: 'http://localhost:9515',
 	repeat: 1,
 	browsers: ['chrome']
+	/*browsers: [{ // For Cordova
+		browserName: "android",
+		chromeOptions: {
+			androidActivity: "io.cordova.hellocordova.MainActivity",
+			androidPackage: "io.cordova.hellocordova"
+		}
+	}]*/
 };
 
 function generateFiles(components, versions, frameworkLibs, bin) {
@@ -77,7 +84,6 @@ function runPerfTests(queue, cb) {
 			console.log('Running [%d/%d] %s@%s ', i, queue.length, job.component, job.version);
 			perfjankie({
 				suite: pkg.name,
-				url: 'http://localhost:8080' + job.url,
 				name: job.component,
 				run: job.version,
 				time: job.seq,
@@ -87,9 +93,26 @@ function runPerfTests(queue, cb) {
 					}
 					runQueue(i + 1);
 				},
+				url: 'http://localhost:8080' + job.url,
 				preScript: function(browser) {
 					return browser.setWindowSize(640, 1136);
+
 				},
+				/*preScript: function(browser){ // For Cordova
+					return browser.elementById('version').then(function(el) {
+						return el.type(job.version);
+					}).then(function() {
+						return browser.elementById('component');
+					}).then(function(el) {
+						return el.type(job.component);
+					}).then(function() {
+						return browser.elementById('submit');
+					}).then(function(el) {
+						return el.click();
+					}).then(function() {
+						return browser.sleep(1000);
+					});
+				}, // End Cordova*/
 				actions: [require('perfjankie/node_modules/browser-perf').actions.scroll({
 					scrollElement: "document.getElementsByTagName('ion-content')[0]"
 				})],
@@ -152,6 +175,7 @@ function defaultArgs(program, cb) {
 		return semver.satisfies(version, opts.versions || '*');
 	});
 
+	// Download files if needed
 	if (program.offline) {
 		var downloadQueue = [];
 		var libDir = path.join(binDir, 'lib')

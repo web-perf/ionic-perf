@@ -11,6 +11,21 @@
 <body>
     <div class="app">
         <h1>Ionic-Perf</h1>
+        <form onsubmit="openPage()">
+            <input id="version" name="version"/>
+            <input id="component" name="component"/>
+            <input id="submit" type="submit"/>
+            <script type="text/javascript">
+                function openPage() {
+                    var version = document.getElementById('version').value;
+                    var component = document.getElementById('component').value;
+                    window.setTimeout(function(){
+                        window.location.href = 'v' + version + '/' + component + '.html';
+                    },1);
+                    return false;
+                }
+            </script>
+        </form>
         <ol>
             <% _.forEach(components, function(component){ %>
             <li>
