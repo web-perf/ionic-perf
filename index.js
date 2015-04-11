@@ -9,6 +9,7 @@ var semver = require('semver');
 var perfjankie = require('perfjankie');
 var program = require('commander');
 var glob = require('glob');
+var wget = require('wget');
 
 var pkg = require('./package.json')
 
@@ -130,7 +131,7 @@ function main(opts) {
 
 module.exports = main;
 
-function defaultArgs(opts, cb) {
+function defaultArgs(program, cb) {
 	var binDir = path.join(__dirname, 'bin');
 	rimraf.sync('./bin');
 	fs.mkdirSync(binDir);
@@ -151,7 +152,37 @@ function defaultArgs(opts, cb) {
 		return semver.satisfies(version, opts.versions || '*');
 	});
 
-	cb(opts);
+	if (program.offline) {
+		var downloadQueue = [];
+		var libDir = path.join(binDir, 'lib')
+		fs.mkdirSync(libDir);
+		_.forEach(opts.versions, function(version) {
+			var destDir = path.join(libDir, 'v' + version);
+			fs.mkdirSync(destDir);
+			downloadQueue.push([opts.frameworkLibs[version].css, path.join(destDir, 'ionic.min.css')]);
+			downloadQueue.push([opts.frameworkLibs[version].js, path.join(destDir, 'ionic.min.js')]);
+			opts.frameworkLibs[version].css = path.join('../lib/', 'v' + version, 'ionic.min.css');
+			opts.frameworkLibs[version].js = path.join('../lib/', 'v' + version, 'ionic.min.js');
+		});
+
+		(function download(i) {
+			if (i >= downloadQueue.length) {
+				cb(opts);
+				return;
+			}
+			var dwld = wget.download(downloadQueue[i][0], downloadQueue[i][1]);
+			dwld.on('error', function(err) {
+				console.log(err);
+				download(i + 1);
+			});
+			dwld.on('end', function(output) {
+				console.log(output);
+				download(i + 1);
+			});
+		}(0));
+	} else {
+		cb(opts);
+	}
 }
 
 program
@@ -159,6 +190,7 @@ program
 	.description(pkg.description)
 	.usage('[options] component1 component2 ...')
 	.option('-v, --versions <versions>', 'Versions of bootstrap to run tests against, specified as a semver range', '*')
+	.option('-o, --offline', 'Download the framework files')
 	.parse(process.argv);
 
 defaultArgs(program, main);
