@@ -23,11 +23,8 @@ var CONFIG = {
 	browsers: ['chrome']
 };
 
-function generateFiles(components, versions, frameworkLibs) {
+function generateFiles(components, versions, frameworkLibs, bin) {
 	console.log('Starting to generate files');
-
-	rimraf.sync('./bin');
-	fs.mkdirSync(path.join(__dirname, 'bin'))
 
 	var queue = [];
 	var versionDir = {};
@@ -36,7 +33,7 @@ function generateFiles(components, versions, frameworkLibs) {
 	_.forEach(components, function(component) {
 		_.forEach(versions, function(version) {
 
-			var dir = path.join(__dirname, 'bin', 'v' + version);
+			var dir = path.join(bin, 'v' + version);
 			// Create a dir if it does not exist for version
 			if (!versionDir[dir]) {
 				fs.mkdirSync(dir);
@@ -62,7 +59,7 @@ function generateFiles(components, versions, frameworkLibs) {
 		});
 	});
 
-	fs.writeFileSync(path.join(__dirname, 'bin/index.html'), _.template(fs.readFileSync(path.join(__dirname, 'test/index.html')))({
+	fs.writeFileSync(path.join(bin, '/index.html'), _.template(fs.readFileSync(path.join(__dirname, 'test/index.html')))({
 		components: components,
 		versions: versions
 	}));
@@ -106,28 +103,15 @@ function runPerfTests(queue, cb) {
 	}(0));
 }
 
-function defaultArgs(opts) {
-	if (!Array.isArray(opts.components) || opts.components.length === 0) {
-		opts.components = glob.sync(path.join(__dirname, 'test/components/*.html')).map(function(component) {
-			return path.basename(component, '.html');
-		});
-	}
-	opts.versions = _.filter(_.keys(opts.frameworkLibs), function(version) {
-		return semver.satisfies(version, opts.versions || '*');
-	});
-}
-
 function main(opts) {
-	defaultArgs(opts);
-	var files = generateFiles(opts.components, opts.versions, opts.frameworkLibs);
-
 	// Start Web Server
 	var server = require('http').createServer(function(request, response) {
 		request.addListener('end', function() {
-			new static.Server(path.join(__dirname, 'bin')).serve(request, response);
+			new static.Server(opts.bin).serve(request, response);
 		}).resume();
 	}).listen(8080);
 
+	var files = generateFiles(opts.components, opts.versions, opts.frameworkLibs, opts.bin);
 	// Start tests
 	perfjankie({
 		couch: _.assign({
@@ -146,6 +130,30 @@ function main(opts) {
 
 module.exports = main;
 
+function defaultArgs(opts, cb) {
+	var binDir = path.join(__dirname, 'bin');
+	rimraf.sync('./bin');
+	fs.mkdirSync(binDir);
+
+	var opts = {
+		components: program.args,
+		versions: program.versions,
+		frameworkLibs: require('./test/versions.json'),
+		bin: binDir
+	};
+
+	if (!Array.isArray(opts.components) || opts.components.length === 0) {
+		opts.components = glob.sync(path.join(__dirname, 'test/components/*.html')).map(function(component) {
+			return path.basename(component, '.html');
+		});
+	}
+	opts.versions = _.filter(_.keys(opts.frameworkLibs), function(version) {
+		return semver.satisfies(version, opts.versions || '*');
+	});
+
+	cb(opts);
+}
+
 program
 	.version(pkg.version)
 	.description(pkg.description)
@@ -153,8 +161,4 @@ program
 	.option('-v, --versions <versions>', 'Versions of bootstrap to run tests against, specified as a semver range', '*')
 	.parse(process.argv);
 
-main({
-	components: program.args,
-	versions: program.versions,
-	frameworkLibs: require('./test/versions.json')
-});
+defaultArgs(program, main);
