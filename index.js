@@ -118,8 +118,6 @@ function defaultArgs(opts) {
 }
 
 function main(opts) {
-	opts.frameworkLibs = require('./test/versions.json');
-
 	defaultArgs(opts);
 	var files = generateFiles(opts.components, opts.versions, opts.frameworkLibs);
 
@@ -157,5 +155,6 @@ program
 
 main({
 	components: program.args,
-	versions: program.versions
+	versions: program.versions,
+	frameworkLibs: require('./test/versions.json')
 });
