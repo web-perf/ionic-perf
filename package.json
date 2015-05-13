@@ -14,11 +14,11 @@
   "author": "Parashuram <code@nparashuram.com>",
   "license": "MIT",
   "dependencies": {
+    "browser-perf": "^1.2.5",
     "commander": "^2.8.1",
     "glob": "^5.0.6",
     "lodash": "^3.8.0",
     "node-static": "^0.7.6",
-    "perfjankie": "^1.2.2",
     "progress": "^1.1.8",
     "rimraf": "^2.3.3",
     "semver": "^4.3.4",
