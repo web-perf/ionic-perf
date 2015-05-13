@@ -1,21 +1,41 @@
 {
+	"1.0.0": {
+		"version": 8,
+		"css": "http://code.ionicframework.com/1.0.0/css/ionic.min.css",
+		"js": "http://code.ionicframework.com/1.0.0/js/ionic.bundle.min.js"
+	},
+	"1.0.0-rc.5": {
+		"seq": 7,
+		"css": "http://code.ionicframework.com/1.0.0-rc.5/css/ionic.min.css",
+		"js": "http://code.ionicframework.com/1.0.0-rc.5/js/ionic.bundle.min.js"
+	},
+	"1.0.0-rc.4": {
+		"seq": 6,
+		"css": "http://code.ionicframework.com/1.0.0-rc.4/css/ionic.min.css",
+		"js": "http://code.ionicframework.com/1.0.0-rc.4/js/ionic.bundle.min.js"
+	},
+	"1.0.0-rc.3": {
+		"seq": 5,
+		"css": "http://code.ionicframework.com/1.0.0-rc.3/css/ionic.min.css",
+		"js": "http://code.ionicframework.com/1.0.0-rc.3/js/ionic.bundle.min.js"
+	},
 	"1.0.0-rc.2": {
-		"seq": 100,
+		"seq": 4,
 		"css": "http://code.ionicframework.com/1.0.0-rc.2/css/ionic.min.css",
 		"js": "http://code.ionicframework.com/1.0.0-rc.2/js/ionic.bundle.min.js"
 	},
 	"1.0.0-rc.1": {
-		"seq": 90,
+		"seq": 3,
 		"css": "http://code.ionicframework.com/1.0.0-rc.1/css/ionic.min.css",
 		"js": "http://code.ionicframework.com/1.0.0-rc.1/js/ionic.bundle.min.js"
 	},
 	"1.0.0-rc.0": {
-		"seq": 80,
+		"seq": 2,
 		"css": "http://code.ionicframework.com/1.0.0-rc.0/css/ionic.min.css",
 		"js": "http://code.ionicframework.com/1.0.0-rc.0/js/ionic.bundle.min.js"
 	},
 	"1.0.0-beta.14": {
-		"seq": 70,
+		"seq": 1,
 		"css": "http://code.ionicframework.com/1.0.0-beta.14/css/ionic.min.css",
 		"js": "http://code.ionicframework.com/1.0.0-beta.14/js/ionic.bundle.min.js"
 	}
