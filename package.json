@@ -14,13 +14,13 @@
   "author": "Parashuram <code@nparashuram.com>",
   "license": "MIT",
   "dependencies": {
-    "browser-perf": "^1.2.5",
+    "browser-perf": "^1.2.8",
     "commander": "^2.8.1",
-    "glob": "^5.0.6",
-    "lodash": "^3.8.0",
+    "glob": "^5.0.10",
+    "lodash": "^3.9.3",
     "node-static": "^0.7.6",
     "progress": "^1.1.8",
-    "rimraf": "^2.3.3",
+    "rimraf": "^2.3.4",
     "semver": "^4.3.4",
     "wget": "0.0.1"
   },
