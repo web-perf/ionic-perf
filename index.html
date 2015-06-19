@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ionic Performance Analysis</title>
+</head>
+<body>
+	<center>
+		<h1>ionic - Performance Analysis</h1>
+		<hr/>
+		<h3>Redirecting to Results on a CouchDB server</h3>
+		<h5>
+			<a href = "https://ionic-perf.cloudant.com/ionic-perf/_design/site/index.html#/summary?pagename=DBMonster&browser=chrome">
+				https://ionic-perf.cloudant.com/ionic-perf/_design/site/index.html#/summary?pagename=DBMonster&browser=chrome
+			</a>
+		</h5>
+		<h4>in <span id="time">3</span> seconds</h4>
+		<hr/>
+		
+	</center>
+	<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-617499-9', 'auto');
+  ga('send', 'pageview');
+
+</script>
+	<script>
+	window.setTimeout(function(){
+		window.location ='https://ionic-perf.cloudant.com/ionic-perf/_design/site/index.html#/summary?pagename=DBMonster&browser=chrome'; 
+	}, 3000);
+
+	var time = 3;
+	window.setInterval(function(){
+		time--;
+		document.getElementById('time').innerHTML = time;
+	},1000);
+	</script>
+</body>
+</html>
